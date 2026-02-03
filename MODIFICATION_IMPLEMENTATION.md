@@ -62,18 +62,18 @@ This document outlines the phased implementation plan for building the Water Int
 
 ### Phase 3: Core Services Logic
 
--   [ ] Fully implement the `NotificationService`, including `init()` and `scheduleNotification()` and `cancelAllNotifications()`. This will require platform-specific setup (especially for Android).
--   [ ] Fully implement the `WorkoutService` as a `ChangeNotifier`, including all state properties (`isWorkoutActive`, `remainingTime`, etc.).
--   [ ] Implement the core timer logic in `WorkoutService` (`startWorkout`, `stopWorkout`, `_startNewCountdownInterval`) which handles the countdown and triggers the scheduling of notifications.
--   [ ] Ensure the `WorkoutService` correctly reads the intensity from the `StorageService`.
--   [ ] **Post-Phase Checklist:**
-    -   [ ] Create unit tests for the `WorkoutService` to verify timer logic, state changes, and interaction with other services (using mocks).
-    -   [ ] Run `dart fix --apply`.
-    -   [ ] Run `flutter analyze` and fix any issues.
-    -   [ ] Run all tests to ensure they pass.
-    -   [ ] Run `dart format .`.
-    -   [ ] Re-read this `MODIFICATION_IMPLEMENTATION.md` file.
-    -   [ ] Update the Journal section.
+-   [x] Fully implement the `NotificationService`, including `init()` and `scheduleNotification()` and `cancelAllNotifications()`. This will require platform-specific setup (especially for Android).
+-   [x] Fully implement the `WorkoutService` as a `ChangeNotifier`, including all state properties (`isWorkoutActive`, `remainingTime`, etc.).
+-   [x] Implement the core timer logic in `WorkoutService` (`startWorkout`, `stopWorkout`, `_startNewCountdownInterval`) which handles the countdown and triggers the scheduling of notifications.
+-   [x] Ensure the `WorkoutService` correctly reads the intensity from the `StorageService`.
+-   [x] **Post-Phase Checklist:**
+    -   [x] Create unit tests for the `WorkoutService` to verify timer logic, state changes, and interaction with other services (using mocks).
+    -   [x] Run `dart fix --apply`.
+    -   [x] Run `flutter analyze` and fix any issues.
+    -   [x] Run all tests to ensure they pass.
+    -   [x] Run `dart format .`.
+    -   [x] Re-read this `MODIFICATION_IMPLEMENTATION.md` file.
+    -   [x] Update the Journal section.
     -   [ ] Use `git diff` to verify changes, create a commit message, and present it for approval.
     -   [ ] Wait for approval before committing.
 

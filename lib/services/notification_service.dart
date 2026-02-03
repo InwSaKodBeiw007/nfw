@@ -1,8 +1,10 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter/material.dart'; // For context or global navigator key if needed for navigation on notification tap
+import 'package:flutter/material.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tzdata;
+// import 'dart:math'; // Not used in NotificationService
 
 class NotificationService {
-  // Singleton instance
   static final NotificationService _instance = NotificationService._internal();
   factory NotificationService() => _instance;
   NotificationService._internal();
@@ -11,11 +13,20 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
 
   Future<void> init() async {
-    // Android initialization
+    tzdata.initializeTimeZones();
+    final String timeZoneName = tz.local.name;
+    try {
+      tz.setLocalLocation(tz.getLocation(timeZoneName));
+    } catch (e) {
+      debugPrint(
+        'Could not set local timezone to $timeZoneName. Falling back to UTC. Error: $e',
+      );
+      tz.setLocalLocation(tz.UTC);
+    }
+
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    // iOS initialization
     const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings(
           requestAlertPermission: false,
@@ -29,25 +40,15 @@ class NotificationService {
           iOS: initializationSettingsIOS,
         );
 
-    // Initialize the plugin
     await flutterLocalNotificationsPlugin.initialize(
-      settings:
-          initializationSettings, // Corrected: use 'settings' as named parameter
+      settings: initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) async {
-        // Handle notification tap
-        // In a real app, you might navigate to a specific screen
         debugPrint('onDidReceiveNotificationResponse: ${response.payload}');
       },
     );
   }
 
   Future<bool> requestPermissions() async {
-    // Android doesn't need explicit permission request for basic notifications
-    // starting from Android 8.0 (API level 26) it's handled by system.
-    // However, for newer Android versions (13+), we might need POST_NOTIFICATIONS permission.
-    // The plugin handles this internally for basic requests.
-
-    // Request permissions for iOS
     final bool? result = await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
           IOSFlutterLocalNotificationsPlugin
@@ -56,7 +57,6 @@ class NotificationService {
     return result ?? false;
   }
 
-  // Placeholder for scheduling notifications, will be fully implemented in Phase 3
   Future<void> scheduleNotification({
     required int id,
     required String title,
@@ -64,10 +64,35 @@ class NotificationService {
     required DateTime scheduledTime,
     String? payload,
   }) async {
-    // Not implemented yet. Will be done in Phase 3.
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+          'hydration_channel', // id
+          'Hydration Reminders', // name
+          channelDescription: 'Reminders to drink water during workouts',
+          importance: Importance.max,
+          priority: Priority.high,
+          ticker: 'ticker',
+        );
+    const DarwinNotificationDetails iOSPlatformChannelSpecifics =
+        DarwinNotificationDetails();
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics, // Corrected typo here
+      iOS: iOSPlatformChannelSpecifics,
+    );
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      id: id,
+      title: title,
+      body: body,
+      scheduledDate: tz.TZDateTime.from(scheduledTime, tz.local),
+      notificationDetails: platformChannelSpecifics,
+      payload: payload,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      // uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime, // Removed due to compilation issues
+    );
   }
 
   Future<void> cancelAllNotifications() async {
-    // Not implemented yet. Will be done in Phase 3.
+    await flutterLocalNotificationsPlugin.cancelAll();
   }
 }

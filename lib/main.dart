@@ -1,33 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:nfw/screens/home_screen.dart';
 import 'package:nfw/screens/onboarding_screen.dart';
-import 'package:nfw/services/notification_service.dart'; // Import NotificationService
+import 'package:nfw/services/notification_service.dart';
 import 'package:nfw/services/storage_service.dart';
 import 'package:nfw/services/workout_service.dart';
 import 'package:provider/provider.dart';
 
-// Using a GlobalKey for the navigator to allow navigation from services
-// if needed in the future, although not strictly required by the current design.
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
-  // Ensure that plugin services are initialized so that `shared_preferences`
-  // and notification plugins can be used before `runApp`.
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize services
   final storageService = StorageService();
-  final notificationService = NotificationService(); // Create an instance
-  await notificationService.init(); // Initialize the notification service
+  final notificationService = NotificationService();
+  await notificationService.init();
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => WorkoutService()),
+        ChangeNotifierProvider(
+          create: (context) {
+            final storage = Provider.of<StorageService>(context, listen: false);
+            final notification = Provider.of<NotificationService>(
+              context,
+              listen: false,
+            );
+            final workoutService = WorkoutService(storage, notification);
+            workoutService.initialize(); // Call initialize here
+            return workoutService;
+          },
+        ),
         Provider(create: (_) => storageService),
-        Provider(
-          create: (_) => notificationService,
-        ), // Provide NotificationService
+        Provider(create: (_) => notificationService),
       ],
       child: const MyApp(),
     ),
@@ -50,7 +54,7 @@ class MyApp extends StatelessWidget {
           seedColor: Colors.teal,
           brightness: Brightness.dark,
         ),
-        fontFamily: 'Roboto', // A placeholder font
+        fontFamily: 'Roboto',
         useMaterial3: true,
       ),
       home: FutureBuilder<bool>(
