@@ -74,7 +74,7 @@ class HomeScreen extends StatelessWidget {
                                 horizontal: 5.0,
                               ),
                               child: Image.asset(
-                                'lib/assets/bottle4oz.jpeg',
+                                'lib/assets/bottle4oz.png',
                                 width: 50,
                                 height: 50,
                               ),
