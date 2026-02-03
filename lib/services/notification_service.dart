@@ -1,8 +1,9 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter/material.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tzdata;
-// import 'dart:math'; // Not used in NotificationService
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -23,6 +24,20 @@ class NotificationService {
       );
       tz.setLocalLocation(tz.UTC);
     }
+
+    // Create the Android Notification Channel
+    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+      'hydration_channel', // id
+      'Hydration Reminders', // name
+      description: 'Reminders to drink water during workouts',
+      importance: Importance.max,
+    );
+
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
+        ?.createNotificationChannel(channel);
 
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -49,12 +64,25 @@ class NotificationService {
   }
 
   Future<bool> requestPermissions() async {
-    final bool? result = await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin
-        >()
-        ?.requestPermissions(alert: true, badge: true, sound: true);
-    return result ?? false;
+    if (Platform.isIOS) {
+      return await flutterLocalNotificationsPlugin
+              .resolvePlatformSpecificImplementation<
+                IOSFlutterLocalNotificationsPlugin
+              >()
+              ?.requestPermissions(alert: true, badge: true, sound: true) ??
+          false;
+    } else if (Platform.isAndroid) {
+      final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+          flutterLocalNotificationsPlugin
+              .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin
+              >();
+
+      final bool? granted = await androidImplementation
+          ?.requestNotificationsPermission();
+      return granted ?? false;
+    }
+    return false;
   }
 
   Future<void> scheduleNotification({
@@ -64,6 +92,9 @@ class NotificationService {
     required DateTime scheduledTime,
     String? payload,
   }) async {
+    debugPrint(
+      'Scheduling notification id: $id at $scheduledTime with body: $body',
+    );
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
           'hydration_channel', // id
@@ -87,9 +118,7 @@ class NotificationService {
       scheduledDate: tz.TZDateTime.from(scheduledTime, tz.local),
       notificationDetails: platformChannelSpecifics,
       payload: payload,
-      androidScheduleMode: AndroidScheduleMode
-          .inexactAllowWhileIdle, // Corrected to inexactAllowWhileIdle
-      // uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime, // Removed due to compilation issues
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
     );
   }
 

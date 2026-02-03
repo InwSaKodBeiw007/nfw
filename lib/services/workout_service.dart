@@ -59,11 +59,11 @@ class WorkoutService with ChangeNotifier {
     String notificationBodyText;
 
     if (_workoutIntensity == WorkoutIntensity.normal) {
-      minutes = random.nextInt(6) + 10; // Random minutes between 10 and 15
+      minutes = random.nextBool() ? 10 : 15;
       notificationBodyText = '1 glass'; // Placeholder for "1 แก้ว"
     } else {
       // WorkoutIntensity.heavy
-      minutes = random.nextInt(6) + 15; // Random minutes between 15 and 20
+      minutes = random.nextBool() ? 15 : 20;
       notificationBodyText = '2 glasses'; // Placeholder for "2 แก้ว"
     }
 

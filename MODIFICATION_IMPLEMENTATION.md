@@ -15,7 +15,17 @@ This document outlines the phased implementation plan for building the Water Int
     -   Ran `dart fix`, `flutter analyze`, and `dart format` to ensure code quality. The project is clean and ready for Phase 2. No surprises or deviations from the plan.
 
     -   **Phase 5 (2026-02-04):**
-        -   Performed manual end-to-end testing of the complete user flow. The application functions as expected according to the design. No `TODO` comments were left.
+        -   Performed manual end-to-end testing. Identified and fixed several issues:
+            *   Resolved `ProviderNotFoundException` by reordering providers in `main.dart`.
+            *   Resolved Android 12+ `exact_alarms_not_permitted` `PlatformException` by changing `AndroidScheduleMode` to `inexactAllowWhileIdle`.
+            *   Resolved a compilation error where `AndroidScheduleMode.alarmAndIdle` was not a valid member.
+            *   Resolved a persistent notification issue by explicitly creating the Android Notification Channel in `NotificationService.init()`.
+            *   Fixed a user-reported bug where the permission dialog was not showing on some Android versions by updating `NotificationService.requestPermissions()` to handle Android specifically.
+            *   Reverted the 1-minute test timer in `WorkoutService` to the original random duration logic.
+        -   Updated the `README.md` file with a proper description of the app.
+        -   Temporarily added code to `main.dart` to clear `SharedPreferences` for testing onboarding, then removed it.
+        -   All quality checks (`dart fix`, `flutter analyze`, `dart format`) passed.
+        -   The application MVP is complete.
         -   Updated the `README.md` file with a proper description of the app.
         -   Temporarily added code to `main.dart` to clear `SharedPreferences` for testing onboarding, then removed it.
         -   All quality checks (`dart fix`, `flutter analyze`, `dart format`) passed.
