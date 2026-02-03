@@ -18,6 +18,10 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        Provider(create: (_) => storageService), // Provide StorageService first
+        Provider(
+          create: (_) => notificationService,
+        ), // Provide NotificationService second
         ChangeNotifierProvider(
           create: (context) {
             final storage = Provider.of<StorageService>(context, listen: false);
@@ -26,12 +30,10 @@ void main() async {
               listen: false,
             );
             final workoutService = WorkoutService(storage, notification);
-            workoutService.initialize(); // Call initialize here
+            workoutService.initialize();
             return workoutService;
           },
         ),
-        Provider(create: (_) => storageService),
-        Provider(create: (_) => notificationService),
       ],
       child: const MyApp(),
     ),

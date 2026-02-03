@@ -76,7 +76,7 @@ class NotificationService {
     const DarwinNotificationDetails iOSPlatformChannelSpecifics =
         DarwinNotificationDetails();
     const NotificationDetails platformChannelSpecifics = NotificationDetails(
-      android: androidPlatformChannelSpecifics, // Corrected typo here
+      android: androidPlatformChannelSpecifics,
       iOS: iOSPlatformChannelSpecifics,
     );
 
@@ -87,7 +87,8 @@ class NotificationService {
       scheduledDate: tz.TZDateTime.from(scheduledTime, tz.local),
       notificationDetails: platformChannelSpecifics,
       payload: payload,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode
+          .inexactAllowWhileIdle, // Corrected to inexactAllowWhileIdle
       // uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime, // Removed due to compilation issues
     );
   }
