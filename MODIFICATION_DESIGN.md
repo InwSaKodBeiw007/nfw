@@ -127,3 +127,35 @@ The design uses a clean, service-oriented architecture with `ChangeNotifier` for
 -   **Simple state management (Provider):** [https://flutter.dev/docs/development/data-and-backend/state-mgmt/simple](https://flutter.dev/docs/development/data-and-backend/state-mgmt/simple)
 -   **Timer class (Dart):** [https://api.flutter.dev/flutter/dart-async/Timer-class.html](https://api.flutter.dev/flutter/dart-async/Timer-class.html)
 -   **shared_preferences:** [https://pub.dev/packages/shared_preferences](https://pub.dev/packages/shared_preferences)
+## 8. Implemented Modifications and Fixes
+
+During the implementation and testing phase, several modifications and fixes were made to the initial design to ensure the application functions correctly and uses the latest recommended practices.
+
+### 8.1. `flutter_local_notifications` Android Configuration
+
+The initial setup for `flutter_local_notifications` required several updates to the Android configuration to align with the latest version of the plugin and Android OS requirements.
+
+-   **`android/app/build.gradle.kts`:**
+    -   Enabled `multiDexEnabled` to support apps with a large number of methods.
+    -   Updated the `compileSdk` version to `36` to meet the requirements of `flutter_local_notifications` and `shared_preferences_android`.
+    -   Migrated the deprecated `kotlinOptions` `jvmTarget` to the `kotlin.compilerOptions` DSL.
+    -   Corrected the `minifyEnabled` property to `isMinifyEnabled` for the release build type, following the Gradle Kotlin DSL syntax.
+-   **`android/app/src/main/AndroidManifest.xml`:**
+    -   Added necessary permissions for scheduling exact alarms, receiving boot completed events, and using full-screen intents.
+    -   Updated the receiver declarations to match the latest class paths provided by the `flutter_local_notifications` plugin for handling scheduled notifications, boot events, and notification actions.
+
+### 8.2. Notification Scheduling Logic
+
+-   **`lib/services/notification_service.dart`:**
+    -   The `zonedSchedule` method call was updated to use named parameters, as required by the latest version of the `flutter_local_notifications` plugin.
+    -   The `uiLocalNotificationDateInterpretation` parameter was removed as it is no longer supported.
+    -   The `androidScheduleMode` was changed from `inexactAllowWhileIdle` to `exactAllowWhileIdle` to ensure timely delivery of notifications during testing.
+
+### 8.3. Test and Debugging Fixes
+
+-   **`test/services/workout_service_test.dart`:**
+    -   Corrected the mocking of the `scheduleNotification` method in the `MockNotificationService` to use `anyNamed` for named arguments, resolving test failures.
+-   **`lib/services/workout_service.dart`:**
+    -   A temporary modification was made to set the notification interval to 1 minute for "normal" workout intensity to facilitate easier testing of the notification functionality.
+
+These changes were crucial for the application to build and run successfully, and for the notification system to work as intended.

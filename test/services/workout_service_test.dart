@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart'; // No alias
+import 'package:mockito/mockito.dart' as mockito; // Alias mockito
 import 'package:nfw/models/workout_intensity.dart';
 import 'package:nfw/services/notification_service.dart';
 import 'package:nfw/services/storage_service.dart';
@@ -19,81 +19,63 @@ void main() {
     setUp(() {
       mockStorageService = MockStorageService();
       mockNotificationService = MockNotificationService();
-      workoutService = WorkoutService(
-        mockStorageService,
-        mockNotificationService,
-      );
+      workoutService = WorkoutService(mockStorageService, mockNotificationService);
 
-      when(
-        mockStorageService.getWorkoutIntensity(),
-      ).thenAnswer((_) async => WorkoutIntensity.normal); // Default mock
+      mockito.when(mockStorageService.getWorkoutIntensity())
+          .thenAnswer((_) async => WorkoutIntensity.normal); // Default mock
+      
+      mockito.when(mockNotificationService.scheduleNotification(
+        id: mockito.anyNamed('id'),
+        title: mockito.anyNamed('title'),
+        body: mockito.anyNamed('body'),
+        scheduledTime: mockito.anyNamed('scheduledTime'),
+        payload: mockito.anyNamed('payload'),
+      )).thenAnswer((_) async => {});
 
-      // Mock scheduleNotification with type casting for non-nullable parameters
-      when(
-        mockNotificationService.scheduleNotification(
-          id: argThat(anything, named: 'id'),
-          title: argThat(anything, named: 'title'),
-          body: argThat(anything, named: 'body'),
-          scheduledTime: argThat(anything, named: 'scheduledTime'),
-          payload: argThat(anything, named: 'payload'),
-        ),
-      ).thenAnswer((_) async => {});
-
-      when(
-        mockNotificationService.cancelAllNotifications(),
-      ).thenAnswer((_) async => {});
+      mockito.when(mockNotificationService.cancelAllNotifications())
+          .thenAnswer((_) async => {});
     });
 
     test('initialize loads workout intensity from storage', () async {
       await workoutService.initialize();
       expect(workoutService.workoutIntensity, WorkoutIntensity.normal);
-      verify(mockStorageService.getWorkoutIntensity()).called(1);
+      mockito.verify(mockStorageService.getWorkoutIntensity()).called(1);
     });
 
-    test(
-      'startWorkout sets isWorkoutActive to true and schedules first notification',
-      () async {
-        await workoutService.initialize(); // Load intensity first
-        workoutService.startWorkout();
-        expect(workoutService.isWorkoutActive, true);
-        // Verify that scheduleNotification is called, but not how many times for now
-        // This test is limited as it can't mock Timer.periodic behavior easily.
-        verify(
-          mockNotificationService.scheduleNotification(
-            id: argThat(anything, named: 'id'),
-            title: argThat(anything, named: 'title'),
-            body: argThat(anything, named: 'body'),
-            scheduledTime: argThat(anything, named: 'scheduledTime'),
-            payload: argThat(anything, named: 'payload'),
-          ),
-        ).called(1);
-      },
-    );
+    test('startWorkout sets isWorkoutActive to true and schedules first notification', () async {
+      await workoutService.initialize(); // Load intensity first
+      workoutService.startWorkout();
+      expect(workoutService.isWorkoutActive, true);
+      // Verify that scheduleNotification is called, but not how many times for now
+      // This test is limited as it can't mock Timer.periodic behavior easily.
+      mockito.verify(mockNotificationService.scheduleNotification(
+        id: mockito.anyNamed('id'),
+        title: mockito.anyNamed('title'),
+        body: mockito.anyNamed('body'),
+        scheduledTime: mockito.anyNamed('scheduledTime'),
+        payload: mockito.anyNamed('payload'),
+      )).called(1);
+    });
 
-    test(
-      'stopWorkout sets isWorkoutActive to false and cancels notifications',
-      () async {
-        await workoutService.initialize();
-        workoutService.startWorkout(); // Need to start first to have a timer
-        workoutService.stopWorkout();
-        expect(workoutService.isWorkoutActive, false);
-        verify(mockNotificationService.cancelAllNotifications()).called(1);
-      },
-    );
+    test('stopWorkout sets isWorkoutActive to false and cancels notifications', () async {
+      await workoutService.initialize();
+      workoutService.startWorkout(); // Need to start first to have a timer
+      workoutService.stopWorkout();
+      expect(workoutService.isWorkoutActive, false);
+      mockito.verify(mockNotificationService.cancelAllNotifications()).called(1);
+    });
 
     test('startWorkout does nothing if already active', () async {
       await workoutService.initialize();
       workoutService.startWorkout();
       workoutService.startWorkout(); // Call again
-      verify(
-        mockNotificationService.scheduleNotification(
-          id: argThat(anything, named: 'id'),
-          title: argThat(anything, named: 'title'),
-          body: argThat(anything, named: 'body'),
-          scheduledTime: argThat(anything, named: 'scheduledTime'),
-          payload: argThat(anything, named: 'payload'),
-        ),
-      ).called(1); // Should only be called once
+      mockito.verify(mockNotificationService.scheduleNotification(
+        id: mockito.anyNamed('id'),
+        title: mockito.anyNamed('title'),
+        body: mockito.anyNamed('body'),
+        scheduledTime: mockito.anyNamed('scheduledTime'),
+        payload: mockito.anyNamed('payload'),
+      )).called(1); // Should only be called once
     });
   });
 }

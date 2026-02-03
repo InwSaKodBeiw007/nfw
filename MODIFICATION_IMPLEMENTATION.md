@@ -6,6 +6,16 @@ This document outlines the phased implementation plan for building the Water Int
 
 *This section will be updated chronologically after each phase to log actions taken, things learned, surprises, and deviations from the plan.*
 
+-   **Phase 6 (2026-02-04):**
+    -   Updated `flutter_local_notifications` and its Android configuration.
+    -   Fixed breaking changes in `zonedSchedule` method.
+    -   Resolved issues with `mockito` in tests.
+    -   Updated `compileSdk` to 36.
+    -   Adjusted notification schedule for testing.
+    -   Fixed a bug related to `notificationBodyText` initialization.
+    -   Set `androidScheduleMode` to `exactAllowWhileIdle` to ensure timely notification delivery during testing.
+    -   Updated documentation in `MODIFICATION_DESIGN.md` and `MODIFICATION_IMPLEMENTATION.md`.
+
 -   **Phase 1 (2026-02-04):**
     -   Ran initial tests, which all passed.
     -   Added `flutter_local_notifications`, `shared_preferences`, and `provider` packages to `pubspec.yaml`.

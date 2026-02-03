@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:nfw/screens/home_screen.dart';
 import 'package:nfw/screens/onboarding_screen.dart';
 import 'package:nfw/services/notification_service.dart';
@@ -14,6 +15,10 @@ void main() async {
   final storageService = StorageService();
   final notificationService = NotificationService();
   await notificationService.init();
+
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+      AndroidFlutterLocalNotificationsPlugin>()?.requestNotificationsPermission();
 
   runApp(
     MultiProvider(

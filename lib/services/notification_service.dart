@@ -19,41 +19,24 @@ class NotificationService {
     try {
       tz.setLocalLocation(tz.getLocation(timeZoneName));
     } catch (e) {
-      debugPrint(
-        'Could not set local timezone to $timeZoneName. Falling back to UTC. Error: $e',
-      );
+      debugPrint('Could not set local timezone to $timeZoneName. Falling back to UTC. Error: $e');
       tz.setLocalLocation(tz.UTC);
     }
-
-    // Create the Android Notification Channel
-    const AndroidNotificationChannel channel = AndroidNotificationChannel(
-      'hydration_channel', // id
-      'Hydration Reminders', // name
-      description: 'Reminders to drink water during workouts',
-      importance: Importance.max,
-    );
-
-    await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.createNotificationChannel(channel);
 
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
     const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings(
-          requestAlertPermission: false,
-          requestBadgePermission: false,
-          requestSoundPermission: false,
-        );
+      requestAlertPermission: false,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
+    );
 
-    const InitializationSettings initializationSettings =
-        InitializationSettings(
-          android: initializationSettingsAndroid,
-          iOS: initializationSettingsIOS,
-        );
+    const InitializationSettings initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
 
     await flutterLocalNotificationsPlugin.initialize(
       settings: initializationSettings,
@@ -67,19 +50,19 @@ class NotificationService {
     if (Platform.isIOS) {
       return await flutterLocalNotificationsPlugin
               .resolvePlatformSpecificImplementation<
-                IOSFlutterLocalNotificationsPlugin
-              >()
-              ?.requestPermissions(alert: true, badge: true, sound: true) ??
+                  IOSFlutterLocalNotificationsPlugin>()
+              ?.requestPermissions(
+                alert: true,
+                badge: true,
+                sound: true,
+              ) ??
           false;
     } else if (Platform.isAndroid) {
       final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
-          flutterLocalNotificationsPlugin
-              .resolvePlatformSpecificImplementation<
-                AndroidFlutterLocalNotificationsPlugin
-              >();
+          flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>();
 
-      final bool? granted = await androidImplementation
-          ?.requestNotificationsPermission();
+      final bool? granted = await androidImplementation?.requestNotificationsPermission();
       return granted ?? false;
     }
     return false;
@@ -92,18 +75,16 @@ class NotificationService {
     required DateTime scheduledTime,
     String? payload,
   }) async {
-    debugPrint(
-      'Scheduling notification id: $id at $scheduledTime with body: $body',
-    );
+    debugPrint('Scheduling notification id: $id at $scheduledTime with body: $body');
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-          'hydration_channel', // id
-          'Hydration Reminders', // name
-          channelDescription: 'Reminders to drink water during workouts',
-          importance: Importance.max,
-          priority: Priority.high,
-          ticker: 'ticker',
-        );
+      'hydration_channel', // id
+      'Hydration Reminders', // name
+      channelDescription: 'Reminders to drink water during workouts',
+      importance: Importance.max,
+      priority: Priority.high,
+      ticker: 'ticker',
+    );
     const DarwinNotificationDetails iOSPlatformChannelSpecifics =
         DarwinNotificationDetails();
     const NotificationDetails platformChannelSpecifics = NotificationDetails(
@@ -117,8 +98,8 @@ class NotificationService {
       body: body,
       scheduledDate: tz.TZDateTime.from(scheduledTime, tz.local),
       notificationDetails: platformChannelSpecifics,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       payload: payload,
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
     );
   }
 
