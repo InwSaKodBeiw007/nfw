@@ -75,7 +75,7 @@ class WorkoutService with ChangeNotifier {
       id: _notificationId++,
       title: 'Time to hydrate!',
       body:
-          'ถึงเวลาจิบน้ำแล้ว! แนะนำให้ดื่ม $notificationBodyText เพื่อรักษาสมดุลร่างกาย',
+          'ถึงเวลาจิบน้ำแล้ว! $notificationBodyText เพื่อรักษาสมดุลร่างกาย',
       scheduledTime: scheduledTime,
       payload: 'workout_hydration',
     );
