@@ -79,19 +79,19 @@ This document outlines the phased implementation plan for building the Water Int
 
 ### Phase 4: Home Screen and State Integration
 
--   [ ] Implement the UI for `HomeScreen`, including the timer display, start/end button, and the water bottle image display.
--   [ ] Set up the `ChangeNotifierProvider` for the `WorkoutService` in the widget tree above the `HomeScreen`.
--   [ ] Use a `Consumer<WorkoutService>` or `Provider.of` in `HomeScreen` to listen for state changes and update the UI accordingly (e.g., the countdown text, button appearance).
--   [ ] Connect the start/end button to the `startWorkout()` and `stopWorkout()` methods of the `WorkoutService`.
--   [ ] Ensure the UI correctly displays 1 or 2 bottle images based on the workout intensity.
--   [ ] **Post-Phase Checklist:**
-    -   [ ] Create widget tests for the `HomeScreen` to verify that it correctly displays state from a mock `WorkoutService`.
-    -   [ ] Run `dart fix --apply`.
-    -   [ ] Run `flutter analyze` and fix any issues.
-    -   [ ] Run all tests to ensure they pass.
-    -   [ ] Run `dart format .`.
-    -   [ ] Re-read this `MODIFICATION_IMPLEMENTATION.md` file.
-    -   [ ] Update the Journal section.
+-   [x] Implement the UI for `HomeScreen`, including the timer display, start/end button, and the water bottle image display.
+-   [x] Set up the `ChangeNotifierProvider` for the `WorkoutService` in the widget tree above the `HomeScreen`.
+-   [x] Use a `Consumer<WorkoutService>` or `Provider.of` in `HomeScreen` to listen for state changes and update the UI accordingly (e.g., the countdown text, button appearance).
+-   [x] Connect the start/end button to the `startWorkout()` and `stopWorkout()` methods of the `WorkoutService`.
+-   [x] Ensure the UI correctly displays 1 or 2 bottle images based on the workout intensity.
+-   [x] **Post-Phase Checklist:**
+    -   [x] Create widget tests for the `HomeScreen` to verify that it correctly displays state from a mock `WorkoutService`.
+    -   [x] Run `dart fix --apply`.
+    -   [x] Run `flutter analyze` and fix any issues.
+    -   [x] Run all tests to ensure they pass.
+    -   [x] Run `dart format .`.
+    -   [x] Re-read this `MODIFICATION_IMPLEMENTATION.md` file.
+    -   [x] Update the Journal section.
     -   [ ] Use `git diff` to verify changes, create a commit message, and present it for approval.
     -   [ ] Wait for approval before committing.
 
