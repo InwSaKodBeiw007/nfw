@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:nfw/screens/home_screen.dart';
 import 'package:nfw/screens/onboarding_screen.dart';
+import 'package:nfw/services/notification_service.dart'; // Import NotificationService
 import 'package:nfw/services/storage_service.dart';
 import 'package:nfw/services/workout_service.dart';
 import 'package:provider/provider.dart';
@@ -10,20 +12,22 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   // Ensure that plugin services are initialized so that `shared_preferences`
-  // can be used before `runApp`.
+  // and notification plugins can be used before `runApp`.
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Here we would initialize our services.
+  // Initialize services
   final storageService = StorageService();
-  // In a real app, you might await for some services to be ready.
-  // For now, we'll determine the start screen synchronously for simplicity,
-  // but a FutureBuilder is used in the UI to handle async checks properly.
+  final notificationService = NotificationService(); // Create an instance
+  await notificationService.init(); // Initialize the notification service
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => WorkoutService()),
         Provider(create: (_) => storageService),
+        Provider(
+          create: (_) => notificationService,
+        ), // Provide NotificationService
       ],
       child: const MyApp(),
     ),
@@ -49,9 +53,26 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Roboto', // A placeholder font
         useMaterial3: true,
       ),
-      // For this initial setup, we'll always start with the OnboardingScreen.
-      // In Phase 2, this will be replaced with logic to check if onboarding is complete.
-      home: const OnboardingScreen(),
+      home: FutureBuilder<bool>(
+        future: _hasCompletedOnboarding(context),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+          if (snapshot.hasData && snapshot.data == true) {
+            return const HomeScreen();
+          }
+          return const OnboardingScreen();
+        },
+      ),
     );
+  }
+
+  Future<bool> _hasCompletedOnboarding(BuildContext context) async {
+    final storageService = Provider.of<StorageService>(context, listen: false);
+    final intensity = await storageService.getWorkoutIntensity();
+    return intensity != null;
   }
 }

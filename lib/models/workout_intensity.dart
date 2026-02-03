@@ -1,4 +1,1 @@
-enum WorkoutIntensity {
-  normal,
-  heavy,
-}
+enum WorkoutIntensity { normal, heavy }

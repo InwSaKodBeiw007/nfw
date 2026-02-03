@@ -44,19 +44,19 @@ This document outlines the phased implementation plan for building the Water Int
 
 ### Phase 2: Onboarding Flow
 
--   [ ] Implement the UI for `OnboardingScreen` as per the design document.
--   [ ] Implement the `StorageService` with methods to save and retrieve the user's selected `WorkoutIntensity`.
--   [ ] Implement the `NotificationService` with the `requestPermissions()` method.
--   [ ] Connect the `OnboardingScreen` UI to the services. On button press, it should request permissions and save the intensity.
--   [ ] Update `main.dart` or a root widget to use the `StorageService` to check if the onboarding screen needs to be shown.
--   [ ] **Post-Phase Checklist:**
-    -   [ ] Create unit tests for the `StorageService` to verify saving and retrieving data.
-    -   [ ] Run `dart fix --apply`.
-    -   [ ] Run `flutter analyze` and fix any issues.
-    -   [ ] Run all tests to ensure they pass.
-    -   [ ] Run `dart format .`.
-    -   [ ] Re-read this `MODIFICATION_IMPLEMENTATION.md` file.
-    -   [ ] Update the Journal section.
+-   [x] Implement the UI for `OnboardingScreen` as per the design document.
+-   [x] Implement the `StorageService` with methods to save and retrieve the user's selected `WorkoutIntensity`.
+-   [x] Implement the `NotificationService` with the `requestPermissions()` method.
+-   [x] Connect the `OnboardingScreen` UI to the services. On button press, it should request permissions and save the intensity.
+-   [x] Update `main.dart` or a root widget to use the `StorageService` to check if the onboarding screen needs to be shown.
+-   [x] **Post-Phase Checklist:**
+    -   [x] Create unit tests for the `StorageService` to verify saving and retrieving data.
+    -   [x] Run `dart fix --apply`.
+    -   [x] Run `flutter analyze` and fix any issues.
+    -   [x] Run all tests to ensure they pass.
+    -   [x] Run `dart format .`.
+    -   [x] Re-read this `MODIFICATION_IMPLEMENTATION.md` file.
+    -   [x] Update the Journal section.
     -   [ ] Use `git diff` to verify changes, create a commit message, and present it for approval.
     -   [ ] Wait for approval before committing.
 
